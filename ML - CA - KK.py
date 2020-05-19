@@ -7,6 +7,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
+from keras.layers.core import Dense, Activation
+from keras.models import Sequential
+
 def ConvertToDict(df,df_column_name):
     df_np_array = df[df_column_name].unique()
     # print(type(df_np_array), df_np_array)
@@ -22,7 +25,7 @@ csvfile = "SG_listings.csv"
 df_sg_listing = pd.read_csv(csvfile)
 # print(df_sg_listing.count())
 #drop rows that have missing data.
-# df_sg_listing.dropna(inplace = True)
+df_sg_listing.dropna(inplace = True)
 # df_sg_listing.to_csv("temp.csv")
 
 #print the new sample count
@@ -34,8 +37,12 @@ print(df_sg_listing.columns)
 #create dictionary
 neighbourhood_dict = ConvertToDict(df_sg_listing,"neighbourhood")
 neighbourhood_group_dict = ConvertToDict(df_sg_listing,"neighbourhood_group")
+room_type_dict = ConvertToDict(df_sg_listing,"room_type")
+
 df_sg_listing["neighbourhood"].replace(neighbourhood_dict,inplace = True)
 df_sg_listing["neighbourhood_group"].replace(neighbourhood_group_dict,inplace = True)
+df_sg_listing["room_type"].replace(room_type_dict,inplace = True)
+
 
 
 # #see the dictionary
@@ -169,7 +176,64 @@ def CustomizedLogReg(df,x_train_column,y_train_column):
 """
 Main
 """
-x_train_column = ["latitude", "longitude"]
-y_train_column = "neighbourhood_group"
-CustomizedLogReg(df_sg_listing,x_train_column,y_train_column)
+# x_train_column = ["latitude", "longitude"]
+# y_train_column = "neighbourhood_group"
+# CustomizedLogReg(df_sg_listing,x_train_column,y_train_column)
+
+
+"""
+Neural Network
+"""
+# df_sg_listing here have dropna before
+# df_train = df_sg_listing.sample(frac = 0.25)
+# df_test = df_sg_listing[~df_sg_listing.isin(df_train)]
+# print(df_test)
+print("-------------------------------------")
+print("Neural Network")
+print("-------------------------------------")
+
+df_sg_listing.drop(columns = ["id","name","host_id","host_name","last_review"], inplace = True)
+print(df_sg_listing.columns)
+df_sg_listing.dropna(inplace = True)
+def CreateDF_test_train_for_Neural_Network(df,fraction = 0.9):
+    df_train = df.sample(frac=fraction)
+    df_test = df[~df.isin(df_train)]
+    return df_train,df_test
+
+df_train,df_test = CreateDF_test_train_for_Neural_Network(df_sg_listing)
+
+x_columns = [0,4]
+
+y_columns = [5]
+
+#
+# df_test.to_csv("test.csv")
+# df_train.to_csv("train.csv")
+
+def CreateNP_array_for_Neural_Network(df,x_columns,y_columns):
+
+    X = df.iloc[:,x_columns].to_numpy()
+    Y = df.iloc[:,y_columns].to_numpy()
+    return X,Y
+
+X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
+X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
+
+def NeuralNetworkModel1(X_train,Y_train):
+    model = Sequential()
+    model.add(Dense(3000, input_shape=(2,), activation='tanh'))
+    # model.add(Dense(2000, activation='relu'))
+    model.add(Dense(3000, activation='tanh'))
+    model.add(Dense(1))
+    model.compile(optimizer='adam', loss='mse', metrics=None)
+    model.fit(X_train, Y_train, batch_size = 32, epochs=500, verbose=1)
+    return model
+
+model = NeuralNetworkModel1(X_train, Y_train)
+loss = model.evaluate(X_test, Y_test, verbose=1)
+# print('Loss = ', loss )
+predictions = model.predict(X_test)
+for i in np.arange(len(predictions)):
+    print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+
 
