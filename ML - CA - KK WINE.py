@@ -6,6 +6,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+import time
+
 
 from keras.layers.core import Dense, Activation
 from keras.models import Sequential
@@ -142,9 +144,129 @@ def NeuralNetworkModel1(X_train,Y_train):
 #     print(',Actual: ', Y_test[i], ', Predicted: ', predictions[i])
 
 def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max_dense_value = 500,increment = 100):
-    df = pd.DataFrame(columns=("dense value", "Y_test", "Y_pred",))
+    df = pd.DataFrame(columns=("dense value", "loss", "duration", "Y_test", "Y_pred"))
     counter = 0
     for j in range(min_dense_value,max_dense_value,increment):
+        start_time = time.time()
+        model = Sequential()
+        model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
+        # model.add(Dense(j, activation='relu'))
+        # model.add(Dense(j, activation='tanh'))
+        model.add(Dense(1))
+        model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
+        model.fit(X_train, Y_train, batch_size = 64, epochs=100, verbose=1)
+        model = NeuralNetworkModel1(X_train, Y_train)
+        loss = model.evaluate(X_test, Y_test, verbose=1)
+        print('Loss = ', loss )
+        predictions = model.predict(X_test)
+        for i in np.arange(len(predictions)):
+            # print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+            Y_test_list = Y_test[i].tolist()
+            predictions_list = predictions[i]
+            print(',Actual: ', Y_test_list[0], ', Predicted: ', predictions_list[0])
+            duration = (time.time() - start_time)
+            df.loc[counter] = [j,loss, duration, Y_test_list[0],predictions_list[0]]
+            counter += 1
+        duration = (time.time() - start_time)
+        print("--- %s seconds ---" % (duration))
+    df.to_csv("Iterated neural Network Output2.csv")
+
+NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,200,11000,200)
+
+def NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max_dense_value = 500,increment = 100):
+    df = pd.DataFrame(columns=("dense value", "loss", "duration", "Y_test", "Y_pred"))
+    counter = 0
+    for j in range(min_dense_value,max_dense_value,increment):
+        start_time = time.time()
+        model = Sequential()
+        model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
+        model.add(Dense(j, activation='sigmoid'))
+        # model.add(Dense(j, activation='tanh'))
+        model.add(Dense(1))
+        model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
+        model.fit(X_train, Y_train, batch_size = 64, epochs=100, verbose=1)
+        model = NeuralNetworkModel1(X_train, Y_train)
+        loss = model.evaluate(X_test, Y_test, verbose=1)
+        print('Loss = ', loss )
+        predictions = model.predict(X_test)
+        for i in np.arange(len(predictions)):
+            # print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+            Y_test_list = Y_test[i].tolist()
+            predictions_list = predictions[i]
+            print(',Actual: ', Y_test_list[0], ', Predicted: ', predictions_list[0])
+            duration = (time.time() - start_time)
+            df.loc[counter] = [j,loss, duration, Y_test_list[0],predictions_list[0]]
+            counter += 1
+        duration = (time.time() - start_time)
+        print("--- %s seconds ---" % (duration))
+    df.to_csv("Iterated neural Network Output3.csv")
+
+NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,200,11000,200)
+
+def NeuralNetworkModel4(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max_dense_value = 500,increment = 100):
+    df = pd.DataFrame(columns=("dense value", "loss", "duration", "Y_test", "Y_pred"))
+    counter = 0
+    for j in range(min_dense_value,max_dense_value,increment):
+        start_time = time.time()
+        model = Sequential()
+        model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
+        model.add(Dense(j, activation='sigmoid'))
+        model.add(Dense(j, activation='tanh'))
+        model.add(Dense(1))
+        model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
+        model.fit(X_train, Y_train, batch_size = 64, epochs=100, verbose=1)
+        model = NeuralNetworkModel1(X_train, Y_train)
+        loss = model.evaluate(X_test, Y_test, verbose=1)
+        print('Loss = ', loss )
+        predictions = model.predict(X_test)
+        for i in np.arange(len(predictions)):
+            # print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+            Y_test_list = Y_test[i].tolist()
+            predictions_list = predictions[i]
+            print(',Actual: ', Y_test_list[0], ', Predicted: ', predictions_list[0])
+            duration = (time.time() - start_time)
+            df.loc[counter] = [j,loss, duration, Y_test_list[0],predictions_list[0]]
+            counter += 1
+        duration = (time.time() - start_time)
+        print("--- %s seconds ---" % (duration))
+    df.to_csv("Iterated neural Network Output4.csv")
+
+NeuralNetworkModel4(X_train,Y_train,X_test,Y_test,200,11000,200)
+
+def NeuralNetworkModel5(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max_dense_value = 500,increment = 100):
+    df = pd.DataFrame(columns=("dense value", "loss", "duration", "Y_test", "Y_pred"))
+    counter = 0
+    for j in range(min_dense_value,max_dense_value,increment):
+        start_time = time.time()
+        model = Sequential()
+        model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
+        model.add(Dense(j, activation='tanh'))
+        model.add(Dense(1))
+        model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
+        model.fit(X_train, Y_train, batch_size = 64, epochs=100, verbose=1)
+        model = NeuralNetworkModel1(X_train, Y_train)
+        loss = model.evaluate(X_test, Y_test, verbose=1)
+        print('Loss = ', loss )
+        predictions = model.predict(X_test)
+        for i in np.arange(len(predictions)):
+            # print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+            Y_test_list = Y_test[i].tolist()
+            predictions_list = predictions[i]
+            print(',Actual: ', Y_test_list[0], ', Predicted: ', predictions_list[0])
+            duration = (time.time() - start_time)
+            df.loc[counter] = [j,loss, duration, Y_test_list[0],predictions_list[0]]
+            counter += 1
+        duration = (time.time() - start_time)
+        print("--- %s seconds ---" % (duration))
+    df.to_csv("Iterated neural Network Output5.csv")
+
+NeuralNetworkModel5(X_train,Y_train,X_test,Y_test,200,11000,200)
+
+def NeuralNetworkModel6(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max_dense_value = 500,increment = 100):
+    df = pd.DataFrame(columns=("dense value", "loss", "duration", "Y_test", "Y_pred"))
+    counter = 0
+    for j in range(min_dense_value,max_dense_value,increment):
+        start_time = time.time()
         model = Sequential()
         model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
         model.add(Dense(j, activation='relu'))
@@ -161,8 +283,11 @@ def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max
             Y_test_list = Y_test[i].tolist()
             predictions_list = predictions[i]
             print(',Actual: ', Y_test_list[0], ', Predicted: ', predictions_list[0])
-            df.loc[counter] = [j,Y_test_list[0],predictions_list[0]]
+            duration = (time.time() - start_time)
+            df.loc[counter] = [j,loss, duration, Y_test_list[0],predictions_list[0]]
             counter += 1
-    df.to_csv("Iterated neural Network Output.csv")
+        duration = (time.time() - start_time)
+        print("--- %s seconds ---" % (duration))
+    df.to_csv("Iterated neural Network Output6.csv")
 
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,200,11000,200)
+NeuralNetworkModel6(X_train,Y_train,X_test,Y_test,200,11000,200)
