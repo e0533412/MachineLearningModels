@@ -26,8 +26,7 @@ df_wine = pd.read_csv(csvfile)
 # print(df_wine.count())
 #drop rows that have missing data.
 df_wine.dropna(inplace = True)
-df_wine = df_wine.reset_index()
-# df_wine.to_csv("temp.csv")
+df_wine.to_csv("temp.csv")
 
 #print the new sample count
 print(df_wine.count())
@@ -100,24 +99,19 @@ print("-------------------------------------")
 def CreateDF_test_train_for_Neural_Network(df,fraction = 0.9):
     df_train = df.sample(frac=fraction)
     df_test = df[~df.isin(df_train)]
-    df_train.dropna(inplace=True)
-    df_test.dropna(inplace=True)
-
+    df_train.dropna(axis=0, inplace=True)
+    df_test.dropna(axis=0, inplace=True)
     return df_train,df_test
 #
 df_train,df_test = CreateDF_test_train_for_Neural_Network(df_wine)
-df_train = df_train.reset_index(drop = True)
-df_test = df_test.reset_index(drop = True)
-
-
 
 x_columns = [1,2,3,4,5,6,7,8,9,10,11]
 
 y_columns = [12]
 
 #
-# df_test.to_csv("test.csv")
-# df_train.to_csv("train.csv")
+df_test.to_csv("test.csv")
+df_train.to_csv("train.csv")
 
 def CreateNP_array_for_Neural_Network(df,x_columns,y_columns):
 
@@ -128,6 +122,8 @@ def CreateNP_array_for_Neural_Network(df,x_columns,y_columns):
 X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
 X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
 print(X_test)
+print(Y_test)
+
 def NeuralNetworkModel1(X_train,Y_train):
     model = Sequential()
     model.add(Dense(200, input_shape=(11,), activation='sigmoid'))
@@ -137,9 +133,10 @@ def NeuralNetworkModel1(X_train,Y_train):
     model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
     model.fit(X_train, Y_train, batch_size = 64, epochs=10, verbose=1)
     return model
-# model = NeuralNetworkModel1(X_train, Y_train)
-# loss = model.evaluate(X_test, Y_test, verbose=1)
-# # print('Loss = ', loss )
-# predictions = model.predict(X_test)
-# for i in np.arange(len(predictions)):
-#     print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+model = NeuralNetworkModel1(X_train, Y_train)
+loss = model.evaluate(X_test, Y_test, verbose=1)
+# print('Loss = ', loss )
+predictions = model.predict(X_test)
+for i in np.arange(len(predictions)):
+    # print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+    print(',Actual: ', Y_test[i], ', Predicted: ', predictions[i])
