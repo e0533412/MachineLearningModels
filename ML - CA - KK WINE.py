@@ -8,6 +8,10 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 import time
 
+#ignore warnings
+import warnings
+warnings.filterwarnings('ignore')
+
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -72,11 +76,7 @@ def CreateNP_array_for_Neural_Network(df,x_columns,y_columns):
     X = df.iloc[:,x_columns].to_numpy()
     Y = df.iloc[:,y_columns].to_numpy()
     return X,Y
-#
-X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
-X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
-# print(X_test)
-# print(Y_test)
+
 
 def NeuralNetworkModel1(X_train,Y_train):
     model = Sequential()
@@ -267,6 +267,14 @@ def CustomizedLogRegWithPCA(x_pca,y_pca):
     print("Accuracy of Comparison: ", accuracy)
 
 
+def GetSumAndPercentageOfNullValues(df):
+    total_missing_values = df.isnull().sum()
+    missing_values_per = df.isnull().sum()/df.isnull().count()
+    null_values = pd.concat([total_missing_values, missing_values_per], axis=1, keys=['total_null', 'total_null_perc'])
+    null_values = null_values.sort_values('total_null', ascending=False)
+    print(null_values[null_values['total_null'] > 0])
+    return null_values[null_values['total_null'] > 0]
+
 """
 Main
 """
@@ -274,103 +282,133 @@ csvfile = "winequalityN.csv"
 #read the csv
 df_wine = pd.read_csv(csvfile)
 # print(df_wine.count())
-#drop rows that have missing data.
+sns.heatmap(df_wine.isnull(),yticklabels=False,cbar=False,cmap='viridis')
+
+###Check with Null values
+Sum = df_wine.isnull().sum()
+Percentage = ( df_wine.isnull().sum()/df_wine.isnull().count())
+
+fill_list = (GetSumAndPercentageOfNullValues(df_wine)).index
+print(type(fill_list),fill_list)
+
+print("----------------------------------")
+print("Dataframe Information before dropping NA")
+print("----------------------------------")
+
+print(df_wine.info())
+
+#drop data with NaN values
 df_wine.dropna(inplace = True)
-df_wine.to_csv("temp.csv")
 
-#print the new sample count
-print(df_wine.count())
+print("----------------------------------")
+print("Dataframe Information after dropping NA")
+print("----------------------------------")
 
-#print the column names
-print(df_wine.columns)
+print(df_wine.info())
+sns.heatmap(df_wine.isnull(),yticklabels=False,cbar=False,cmap='viridis')
 
-#create dictionary
-wine_type_dict = ConvertToDict(df_wine,"type")
-# room_type_dict = ConvertToDict(df_wine,"room_type")
+# df_wine.to_csv("temp.csv")
 #
-df_wine["type"].replace(wine_type_dict,inplace = True)
-
-#plot correlation matrix
-corr_mat = df_wine.corr()
-plt.figure(figsize=(15,5))
-sns.heatmap(data=corr_mat, annot=True, cmap='GnBu')
-plt.show()
-
-target = 'quality'
-candidates = corr_mat.index[
-    (corr_mat[target] > 0.4) | (corr_mat[target] < -0.4)
-].values
-candidates = candidates[candidates != target]
-print('Correlated to', target, ': ', candidates)
-
-"""
-Neural Network
-"""
-df_wine here have dropna before
-df_train = df_wine.sample(frac = 0.25)
-df_test = df_wine[~df_wine.isin(df_train)]
-print(df_test)
-print("-------------------------------------")
-print("Neural Network")
-print("-------------------------------------")
-
-
+# #print the new sample count
+# print(df_wine.count())
 #
-df_train,df_test = CreateDF_test_train_for_Neural_Network(df_wine)
-
-x_columns = [0,1,2,3,4,5,6,7,8,9,10,11]
-
-y_columns = [12]
-
+# #print the column names
+# print(df_wine.columns)
 #
-df_test.to_csv("test.csv")
-df_train.to_csv("train.csv")
-
-# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,500,2100,500)
-
-# NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,500,2100,500)
-
-# NeuralNetworkModel4(X_train,Y_train,X_test,Y_test,500,2100,500)
-
-# NeuralNetworkModel5(X_train,Y_train,X_test,Y_test,500,2100,200)
-
-# NeuralNetworkModel6(X_train,Y_train,X_test,Y_test,500,2100,500)
-
-# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,500,2100,500) #accuracy around 0.49
-
-# NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,500,1100,500) #accuracy around 0.49
-
-"""
-EMPLOY LOGREG
-"""
-
-print("-------------------------------------")
-print("LOGREG")
-print("-------------------------------------")
-
-CustomizedLogReg(df_wine,x_columns,y_columns)
-
-
-"""
-EMPLOY PCA with LOGREG
-"""
-
-print("-------------------------------------")
-print("PCA with LOGREG")
-print("-------------------------------------")
-y_pca = df_wine.iloc[:,y_columns].values
-x_pca = StandardScaler().fit_transform(df_wine.iloc[:,x_columns])
-
-pca = PCA(n_components=1)
-pc = pca.fit_transform(x_pca)
-# print(pc)
-
-print(pca.explained_variance_ratio_)
-print(pca.explained_variance_ratio_.sum())
-
-
-CustomizedLogRegWithPCA(x_pca,y_pca)
-
-
-
-
+# #create dictionary
+# wine_type_dict = ConvertToDict(df_wine,"type")
+# # room_type_dict = ConvertToDict(df_wine,"room_type")
+# #
+# df_wine["type"].replace(wine_type_dict,inplace = True)
+#
+# #plot correlation matrix
+# corr_mat = df_wine.corr()
+# plt.figure(figsize=(15,5))
+# sns.heatmap(data=corr_mat, annot=True, cmap='GnBu')
+# plt.show()
+#
+# target = 'quality'
+# candidates = corr_mat.index[
+#     (corr_mat[target] > 0.4) | (corr_mat[target] < -0.4)
+# ].values
+# candidates = candidates[candidates != target]
+# print('Correlated to', target, ': ', candidates)
+# #
+#
+# """
+# Neural Network
+# """
+# # df_wine here have dropna before
+# df_train = df_wine.sample(frac = 0.25)
+# df_test = df_wine[~df_wine.isin(df_train)]
+# print(df_test)
+# print("-------------------------------------")
+# print("Neural Network")
+# print("-------------------------------------")
+#
+#
+# #
+# df_train,df_test = CreateDF_test_train_for_Neural_Network(df_wine)
+#
+#
+#
+# x_columns = [0,1,2,3,4,5,6,7,8,9,10,11]
+#
+# y_columns = [12]
+# X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
+# X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
+# # print(X_test)
+# # print(Y_test)
+#
+# #
+# df_test.to_csv("test.csv")
+# df_train.to_csv("train.csv")
+#
+# # NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,500,2100,500)
+#
+# # NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,500,2100,500)
+#
+# # NeuralNetworkModel4(X_train,Y_train,X_test,Y_test,500,2100,500)
+#
+# # NeuralNetworkModel5(X_train,Y_train,X_test,Y_test,500,2100,200)
+#
+# # NeuralNetworkModel6(X_train,Y_train,X_test,Y_test,500,2100,500)
+#
+# # NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,500,2100,500) #accuracy around 0.49
+#
+# # NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,500,1100,500) #accuracy around 0.49
+#
+# """
+# EMPLOY LOGREG
+# """
+#
+# print("-------------------------------------")
+# print("LOGREG")
+# print("-------------------------------------")
+#
+# CustomizedLogReg(df_wine,x_columns,y_columns)
+#
+#
+# """
+# EMPLOY PCA with LOGREG
+# """
+#
+# print("-------------------------------------")
+# print("PCA with LOGREG")
+# print("-------------------------------------")
+# y_pca = df_wine.iloc[:,y_columns].values
+# x_pca = StandardScaler().fit_transform(df_wine.iloc[:,x_columns])
+#
+# pca = PCA(n_components=1)
+# pc = pca.fit_transform(x_pca)
+# # print(pc)
+#
+# print(pca.explained_variance_ratio_)
+# print(pca.explained_variance_ratio_.sum())
+#
+#
+# CustomizedLogRegWithPCA(x_pca,y_pca)
+#
+#
+#
+#
