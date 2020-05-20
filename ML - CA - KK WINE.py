@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix as cm
 import time
 
 #ignore warnings
@@ -37,39 +37,40 @@ def CreateDF_test_train_for_Neural_Network(df,fraction = 0.9):
 
 def CustomizedLogReg(df,x_columns,y_columns):
     # using logistic regression to determine area [max_iter if set to anything less than 150 it will not converge]
-    logReg = LogisticRegression(solver='lbfgs', multi_class='multinomial', C=1e5,random_state=42, max_iter=1000)
 
     # Comparison 1 - Lat,long against neighbourhood
     x = df.iloc[:,x_columns]
     y = df.iloc[:,y_columns]
 
     # split data
-    x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=40, test_size=0.2)
-    # display count of each data
-    # print("display count values")
-    # print(x_train.count(), y_train.count(), x_test.count(), y_test.count())
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=40)
 
-    # Model Fitting for Comparison 1 and Comparison 2
-    logReg.fit(x_train, y_train.values.ravel())
+    print("----------------------------------")
+    print("X_test.head")
+    print("----------------------------------")
+    print(x_test.head())
 
-    # Prediction for Comparison 1 and Comparison 2
+    ##Prepare Log Reg Model
+    logReg = LogisticRegression(random_state=40)
+
+    logReg.fit(x_train, y_train)
+
+    train_accuracy = logReg.score(x_train, y_train)
+    test_accuracy = logReg.score(x_test, y_test)
+    print('One-vs-rest', '-' * 35,
+          'Accuracy Score of Train Model : {:.2f}'.format(train_accuracy),
+          'Accuracy Score of Test  Model : {:.2f}'.format(test_accuracy), sep='\n')
+
     y_pred = logReg.predict(x_test)
+    score = round(accuracy_score(y_test, y_pred), 3)
+    cm1 = cm(y_test, y_pred)
+    sns.heatmap(cm1, annot=True, fmt=".0f")
+    plt.xlabel('Predicted Values')
+    plt.ylabel('Actual Values')
+    plt.title('Accuracy Score: {0}'.format(score), size=15)
+    plt.show()
+    print(cm)
 
-    # print("--")
-    # print("y_test")
-    # print(y_test)
-    # print("y_pred")
-    # print(y_pred.tolist())
-
-    # Check Accuracy Score for Comparison 1 and Comparison 2
-    accuracy = accuracy_score(y_test, y_pred)
-
-    print("Accuracy of Comparison: ", accuracy)
-
-    # Produce Confusion Matrices
-    # cm = confusion_matrix(y_test, y_pred, labels=[1, 0])
-    # print("Confusion Matrix")
-    # print(cm)
 
 def CreateNP_array_for_Neural_Network(df,x_columns,y_columns):
 
@@ -121,7 +122,7 @@ def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max
             counter += 1
         duration = (time.time() - start_time)
         print("--- %s seconds ---" % (duration))
-    df.to_csv("1-sigmoid 100-epoch.csv")
+    df.to_csv("1-sigmoid x = 1,2,3,4,5,6,7,8,9,10,11 y = 13.csv")
 
 def NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max_dense_value = 500,increment = 100):
     df = pd.DataFrame(columns=("dense value", "loss", "duration", "Y_test", "Y_pred"))
@@ -307,64 +308,52 @@ print("----------------------------------")
 print(df_wine.info())
 sns.heatmap(df_wine.isnull(),yticklabels=False,cbar=False,cmap='viridis')
 
-# df_wine.to_csv("temp.csv")
-#
-# #print the new sample count
-# print(df_wine.count())
-#
-# #print the column names
-# print(df_wine.columns)
-#
-# #create dictionary
-# wine_type_dict = ConvertToDict(df_wine,"type")
-# # room_type_dict = ConvertToDict(df_wine,"room_type")
-# #
-# df_wine["type"].replace(wine_type_dict,inplace = True)
-#
-# #plot correlation matrix
-# corr_mat = df_wine.corr()
-# plt.figure(figsize=(15,5))
-# sns.heatmap(data=corr_mat, annot=True, cmap='GnBu')
-# plt.show()
-#
-# target = 'quality'
-# candidates = corr_mat.index[
-#     (corr_mat[target] > 0.4) | (corr_mat[target] < -0.4)
-# ].values
-# candidates = candidates[candidates != target]
-# print('Correlated to', target, ': ', candidates)
-# #
-#
-# """
-# Neural Network
-# """
-# # df_wine here have dropna before
-# df_train = df_wine.sample(frac = 0.25)
-# df_test = df_wine[~df_wine.isin(df_train)]
-# print(df_test)
-# print("-------------------------------------")
-# print("Neural Network")
-# print("-------------------------------------")
-#
-#
-# #
-# df_train,df_test = CreateDF_test_train_for_Neural_Network(df_wine)
-#
-#
-#
-# x_columns = [0,1,2,3,4,5,6,7,8,9,10,11]
-#
-# y_columns = [12]
-# X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
-# X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
-# # print(X_test)
-# # print(Y_test)
-#
-# #
-# df_test.to_csv("test.csv")
-# df_train.to_csv("train.csv")
-#
-# # NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,500,2100,500)
+### Show the correlation matrix
+corr_matrix = df_wine.corr()
+corr_list = corr_matrix.quality.abs().sort_values(ascending=False).index[0:]
+
+print("----------------------------------")
+print("Correlation List")
+print("----------------------------------")
+print(corr_list)
+plt.figure(figsize=(11,9))
+dropSelf = np.zeros_like(corr_matrix)
+dropSelf[np.triu_indices_from(dropSelf)] = True
+sns.heatmap(corr_matrix, cmap=sns.diverging_palette(220, 10, as_cmap=True), annot=True, fmt=".2f", mask=dropSelf)
+sns.set(font_scale=1.5)
+
+print("----------------------------------")
+print("Creating 2 Bins Model of Two Types of Wine Quality Classes")
+print("----------------------------------")
+df_bin = df_wine.copy()
+wine_type_dict = ConvertToDict(df_bin,"type")
+df_bin["type"].replace(wine_type_dict,inplace = True)
+bins = [0,4,7,10]
+labels = [0,1,2]
+df_bin['quality_range']= pd.cut(x=df_bin['quality'], bins=bins, labels=labels)
+print(df_bin[['quality_range','quality']].head())
+print(df_bin.head())
+
+#ASSIGN COLUMNS YOU WANT TO USE BASED ON df_bin
+x_columns = [0,1,2,3,4,5,6,7,8,9,10,11]
+y_columns = [13]
+
+CustomizedLogReg(df_bin,x_columns,y_columns)
+
+"""
+Neural Network
+"""
+# df_wine here have dropna before
+print("-------------------------------------")
+print("Neural Network")
+print("-------------------------------------")
+
+df_train,df_test = CreateDF_test_train_for_Neural_Network(df_bin)
+
+X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
+X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
+
+NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,500,2100,500)
 #
 # # NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,500,2100,500)
 #
