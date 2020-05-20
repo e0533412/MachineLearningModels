@@ -59,7 +59,7 @@ print('Correlated to', target, ': ', candidates)
 
 def CustomizedLogReg(df,x_train_column,y_train_column):
     # using logistic regression to determine area [max_iter if set to anything less than 150 it will not converge]
-    logReg = LogisticRegression(solver='lbfgs', multi_class='multinomial', random_state=42, C=1e3, max_iter=200)
+    logReg = LogisticRegression(solver='lbfgs', multi_class='multinomial', random_state=42, max_iter=200)
 
     # Comparison 1 - Lat,long against neighbourhood
     x = df[x_train_column]
@@ -97,9 +97,9 @@ def CustomizedLogReg(df,x_train_column,y_train_column):
 Main
 """
 # x_train_column = ["type","fixed acidity","volatile acidity","citric acid","residual sugar","chlorides","free sulfur dioxide","total sulfur dioxide","density","pH","sulphates","alcohol"]
-x_train_column = ["alcohol"]
-y_train_column = "quality"
-CustomizedLogReg(df_wine,x_train_column,y_train_column)
+# x_train_column = ["alcohol"]
+# y_train_column = "quality"
+# CustomizedLogReg(df_wine,x_train_column,y_train_column)
 
 
 """
@@ -143,7 +143,7 @@ X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
 
 def NeuralNetworkModel1(X_train,Y_train):
     model = Sequential()
-    model.add(Dense(200, input_shape=(11,), activation='sigmoid'))
+    model.add(Dense(200, input_shape=(X_train.shape[1],), activation='sigmoid'))
     # model.add(Dense(2000, activation='relu'))
     model.add(Dense(200, activation='tanh'))
     model.add(Dense(1))
@@ -164,7 +164,7 @@ def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max
     for j in range(min_dense_value,max_dense_value,increment):
         start_time = time.time()
         model = Sequential()
-        model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
+        model.add(Dense(j, input_shape=(X_train.shape[1],), activation='sigmoid'))
         # model.add(Dense(j, activation='relu'))
         # model.add(Dense(j, activation='tanh'))
         model.add(Dense(1))
@@ -194,7 +194,7 @@ def NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max
     for j in range(min_dense_value,max_dense_value,increment):
         start_time = time.time()
         model = Sequential()
-        model.add(Dense(j, input_shape=(11,), activation='tanh'))
+        model.add(Dense(j, input_shape=(X_train.shape[1],), activation='tanh'))
         # model.add(Dense(j, activation='sigmoid'))
         # model.add(Dense(j, activation='tanh'))
         model.add(Dense(1))
@@ -224,7 +224,7 @@ def NeuralNetworkModel4(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max
     for j in range(min_dense_value,max_dense_value,increment):
         start_time = time.time()
         model = Sequential()
-        model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
+        model.add(Dense(j, input_shape=(X_train.shape[1],), activation='sigmoid'))
         model.add(Dense(j, activation='sigmoid'))
         # model.add(Dense(j, activation='tanh'))
         model.add(Dense(1))
@@ -254,7 +254,7 @@ def NeuralNetworkModel5(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max
     for j in range(min_dense_value,max_dense_value,increment):
         start_time = time.time()
         model = Sequential()
-        model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
+        model.add(Dense(j, input_shape=(X_train.shape[1],), activation='sigmoid'))
         model.add(Dense(j, activation='tanh'))
         model.add(Dense(1))
         model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
@@ -283,7 +283,7 @@ def NeuralNetworkModel6(X_train,Y_train,X_test,Y_test,min_dense_value = 200, max
     for j in range(min_dense_value,max_dense_value,increment):
         start_time = time.time()
         model = Sequential()
-        model.add(Dense(j, input_shape=(11,), activation='sigmoid'))
+        model.add(Dense(j, input_shape=(X_train.shape[1],), activation='sigmoid'))
         model.add(Dense(j, activation='relu'))
         model.add(Dense(j, activation='tanh'))
         model.add(Dense(1))
@@ -317,7 +317,7 @@ print("-------------------------------------")
 y_pca = df_wine.iloc[:,y_columns].values
 x_pca = StandardScaler().fit_transform(df_wine.iloc[:,x_columns])
 
-pca = PCA(n_components=5)
+pca = PCA(n_components=1)
 pc = pca.fit_transform(x_pca)
 # print(pc)
 
@@ -354,4 +354,8 @@ def CustomizedLogRegWithPCA(x_pca,y_pca):
     print("Accuracy of Comparison: ", accuracy)
 
 CustomizedLogRegWithPCA(x_pca,y_pca)
+# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,500,2100,500) #accuracy around 0.49
+NeuralNetworkModel3(X_train,Y_train,X_test,Y_test,500,1100,500) #accuracy around 0.49
+
+
 
