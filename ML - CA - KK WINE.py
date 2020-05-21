@@ -6,6 +6,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix as cm
+from sklearn.cluster import DBSCAN
+
 import time
 
 #ignore warnings
@@ -252,9 +254,9 @@ print(df_bin.head())
 
 #ASSIGN COLUMNS YOU WANT TO USE BASED ON df_bin
 x_columns = [1,2,3,4,5,6,7,8,9,10,11]
-y_columns = [13]
+y_columns = [12]
 y_columns2 = [0]
-y_columns3 = [12]
+y_columns3 = [13]
 
 CustomizedLogReg(df_bin,x_columns,y_columns)
 
@@ -268,13 +270,21 @@ print("-------------------------------------")
 
 df_train,df_test = CreateDF_test_train_for_Neural_Network(df_bin)
 
+### Create NP Array from the respective Scenario
 X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
+X_train2,Y_train2 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns2)
+X_train3,Y_train3 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns3)
+
 X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
+X_test2,Y_test2 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns2)
+X_test3,Y_test3 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns3)
+
+
 
 print("Based on All columns")
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,1,500,2100,250)
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns2,2,500,2100,250)
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns3,3,500,2100,250)
+# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,1,500,2100,250)
+# NeuralNetworkModel2(X_train2,Y_train2,X_test2,Y_test2,x_columns,y_columns2,2,500,2100,250)
+# NeuralNetworkModel2(X_train3,Y_train3,X_test3,Y_test3,x_columns,y_columns3,3,500,2100,250)
 
 """
 EMPLOY PCA with LOGREG
@@ -283,16 +293,43 @@ EMPLOY PCA with LOGREG
 print("-------------------------------------")
 print("PCA with NEURAL NETWORK")
 print("-------------------------------------")
-print(df_bin.info())
 
-x_pca,y_pca = PCAPrep(df_bin,x_columns,y_columns)
-CustomizedLogRegWithPCA2(x_pca,y_pca,x_columns,y_columns,1)
+# x_pca,y_pca = PCAPrep(df_bin,x_columns,y_columns)
+# CustomizedLogRegWithPCA2(x_pca,y_pca,x_columns,y_columns,1)
+#
+# x_pca2,y_pca2 = PCAPrep(df_bin,x_columns,y_columns2)
+# CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns,2)
+#
+# x_pca3,y_pca3 = PCAPrep(df_bin,x_columns,y_columns3)
+# CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns,3)
 
-x_pca2,y_pca2 = PCAPrep(df_bin,x_columns,y_columns2)
-CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns,2)
+"""
+EMPLOY PEARSON CORR with LOGREG
+"""
 
-x_pca3,y_pca3 = PCAPrep(df_bin,x_columns,y_columns3)
-CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns,3)
+print("-------------------------------------")
+print("PEARSON CORR with NEURAL NETWORK")
+print("-------------------------------------")
 
 
+"""
+EMPLOY DBSCAN
+"""
+print("-------------------------------------")
+print("DBSCAN with NEURAL NETWORK")
+print("-------------------------------------")
 
+x = df_bin.iloc[:,x_columns].values
+
+dbscan = DBSCAN(eps=0.5, min_samples = 5)
+clusters = dbscan.fit_predict(x)
+
+colors = 'rgbkcmy'
+
+for i in np.unique(clusters):
+    label = 'Outlier' if i == -1 else 'Cluster ' + str(i + 1)
+    plt.scatter(x[clusters==i,0], x[clusters==i,1],
+                color=colors[i], label=label)
+
+plt.legend()
+plt.show()

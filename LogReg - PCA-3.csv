@@ -1,2 +1,2 @@
 ,Duration of Model,Accuracy Score of Train Model,Accuracy Score of Test  Model,X_train columns,Y_train columns
-0,0.20345497131347656,0.5495137046861185,0.5528623001547189,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]",[13]
+0,0.05887007713317871,0.9308134394341291,0.9339865910263022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]",[12]
