@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix as cm
 from sklearn.cluster import DBSCAN
+from mpl_toolkits.mplot3d import Axes3D
 
 import time
 
@@ -65,7 +66,7 @@ def CustomizedLogReg(df,x_columns,y_columns):
     plt.xlabel('Predicted Values')
     plt.ylabel('Actual Values')
     plt.title('Accuracy Score: {0}'.format(score), size=15)
-    plt.show()
+    # plt.show()
     print(cm)
 
 
@@ -224,7 +225,7 @@ print("Dataframe Information after dropping NA")
 print("----------------------------------")
 
 print(df_wine.info())
-sns.heatmap(df_wine.isnull(),yticklabels=False,cbar=False,cmap='viridis')
+# sns.heatmap(df_wine.isnull(),yticklabels=False,cbar=False,cmap='viridis')
 
 ### Show the correlation matrix
 corr_matrix = df_wine.corr()
@@ -237,7 +238,7 @@ print(corr_list)
 plt.figure(figsize=(11,9))
 dropSelf = np.zeros_like(corr_matrix)
 dropSelf[np.triu_indices_from(dropSelf)] = True
-sns.heatmap(corr_matrix, cmap=sns.diverging_palette(220, 10, as_cmap=True), annot=True, fmt=".2f", mask=dropSelf)
+# sns.heatmap(corr_matrix, cmap=sns.diverging_palette(220, 10, as_cmap=True), annot=True, fmt=".2f", mask=dropSelf)
 sns.set(font_scale=1.5)
 
 print("----------------------------------")
@@ -253,6 +254,7 @@ print(df_bin[['quality_range','quality']].head())
 print(df_bin.head())
 
 #ASSIGN COLUMNS YOU WANT TO USE BASED ON df_bin
+total_columns = [0,1,2,3,4,5,6,7,8,9,10,11,12,13]
 x_columns = [1,2,3,4,5,6,7,8,9,10,11]
 y_columns = [12]
 y_columns2 = [0]
@@ -318,18 +320,23 @@ EMPLOY DBSCAN
 print("-------------------------------------")
 print("DBSCAN with NEURAL NETWORK")
 print("-------------------------------------")
-
-x = df_bin.iloc[:,x_columns].values
-
-dbscan = DBSCAN(eps=0.5, min_samples = 5)
+column_to_do_dbscan = [0,1,2,3,4,5,6,7,8,9,10,11,12,13]
+fig = plt.figure(figsize=(10, 10))
+x = df_bin.iloc[:,column_to_do_dbscan].values
+print(x)
+eps = 3
+min_samples = 25
+dbscan = DBSCAN(eps=eps, min_samples = min_samples)
 clusters = dbscan.fit_predict(x)
-
 colors = 'rgbkcmy'
 
 for i in np.unique(clusters):
     label = 'Outlier' if i == -1 else 'Cluster ' + str(i + 1)
-    plt.scatter(x[clusters==i,0], x[clusters==i,1],
-                color=colors[i], label=label)
+    plt.scatter(x[clusters==i,11], x[clusters==i,12],
+                label=label)
 
+fig.suptitle(df_bin.columns[11] + " vs " + df_bin.columns[12] + ", eps = " + str(eps) + ",minsamples = " + str(min_samples) , fontsize=20)
+plt.xlabel(df_bin.columns[11], fontsize=18)
+plt.ylabel(df_bin.columns[12], fontsize=16)
 plt.legend()
 plt.show()
