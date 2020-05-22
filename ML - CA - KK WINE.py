@@ -11,10 +11,6 @@ from mpl_toolkits.mplot3d import Axes3D
 
 import time
 
-#ignore warnings
-import warnings
-warnings.filterwarnings('ignore')
-
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -192,7 +188,7 @@ fill_list = (GetSumAndPercentageOfNullValues(df_wine)).index
 print(type(fill_list),fill_list)
 
 print("----------------------------------")
-print("Dataframe Information before dropping NA")
+print("Dataframe Information before fill it with means")
 print("----------------------------------")
 
 print(df_wine.info())
@@ -221,7 +217,7 @@ print(corr_list)
 plt.figure(figsize=(11,9))
 dropSelf = np.zeros_like(corr_matrix)
 dropSelf[np.triu_indices_from(dropSelf)] = True
-# sns.heatmap(corr_matrix, cmap=sns.diverging_palette(220, 10, as_cmap=True), annot=True, fmt=".2f", mask=dropSelf)
+sns.heatmap(corr_matrix, cmap=sns.diverging_palette(220, 10, as_cmap=True), annot=True, fmt=".2f", mask=dropSelf)
 sns.set(font_scale=1.5)
 
 print("----------------------------------")
