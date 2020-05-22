@@ -75,22 +75,22 @@ def CreateNP_array_for_Neural_Network(df,x_columns,y_columns):
     Y = df.iloc[:,y_columns].to_numpy()
     return X,Y
 
-def NeuralNetworkModel1(X_train,Y_train):
-    model = Sequential()
-    model.add(Dense(200, input_shape=(X_train.shape[1],), activation='sigmoid'))
-    # model.add(Dense(2000, activation='relu'))
-    model.add(Dense(200, activation='tanh'))
-    model.add(Dense(1))
-    model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
-    model.fit(X_train, Y_train, batch_size = 64, epochs=10, verbose=1)
-    return model
-# model = NeuralNetworkModel1(X_train, Y_train)
-# loss = model.evaluate(X_test, Y_test, verbose=1)
-# # print('Loss = ', loss )
-# predictions = model.predict(X_test)
-# for i in np.arange(len(predictions)):
-#     # print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
-#     print(',Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+# def NeuralNetworkModel1(X_train,Y_train):
+#     model = Sequential()
+#     model.add(Dense(200, input_shape=(X_train.shape[1],), activation='sigmoid'))
+#     # model.add(Dense(2000, activation='relu'))
+#     model.add(Dense(200, activation='tanh'))
+#     model.add(Dense(1))
+#     model.compile(optimizer='adam', loss='mse', metrics=["accuracy"])
+#     model.fit(X_train, Y_train, batch_size = 64, epochs=10, verbose=1)
+#     return model
+# # model = NeuralNetworkModel1(X_train, Y_train)
+# # loss = model.evaluate(X_test, Y_test, verbose=1)
+# # # print('Loss = ', loss )
+# # predictions = model.predict(X_test)
+# # for i in np.arange(len(predictions)):
+# #     # print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
+# #     print(',Actual: ', Y_test[i], ', Predicted: ', predictions[i])
 
 def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,a,min_dense_value = 200, max_dense_value = 300,increment = 200):
     df = pd.DataFrame(columns=("dense value", "accuracy", "duration", "X_train columns", "Y_train columns"))
@@ -122,8 +122,8 @@ def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,a,min_
         df.loc[j] = [j, accuracy_score, duration, x_columns, y_columns]
     df.to_csv("NN - " + activation_mode + "-" + str(a) + ".csv")
 
-def CustomizedLogRegWithPCA2(x,y,x_columns,y_columns,a):
-    df = pd.DataFrame(columns=("Duration of Model", "Accuracy Score of Train Model", "Accuracy Score of Test  Model", "X_train columns", "Y_train columns"))
+def CustomizedLogRegWithPCA2(x,y,x_columns,y_columns,a,PCA=""):
+    df = pd.DataFrame(columns=("Duration of Model", "Accuracy Score of Train Model", "Accuracy Score of Test  Model", "X_train columns", "Y_train columns","PCA"))
     logReg = LogisticRegression(solver='lbfgs', multi_class='multinomial', random_state=42, max_iter=500)
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=40)
     ##Prepare Log Reg Model
@@ -147,8 +147,8 @@ def CustomizedLogRegWithPCA2(x,y,x_columns,y_columns,a):
     plt.title('Accuracy Score: {0}'.format(score), size=15)
     plt.show()
     print(cm)
-    df.loc[0] = [duration, train_accuracy, test_accuracy, x_columns, y_columns]
-    df.to_csv("LogReg - PCA" + "-" + str(a) + ".csv")
+    df.loc[0] = [duration, train_accuracy, test_accuracy, x_columns, y_columns,PCA]
+    df.to_csv(r"./LogReg - PCA" + "-" + str(a) + ".csv")
 
 
 
@@ -185,15 +185,12 @@ def GetSumAndPercentageOfNullValues(df):
     print(null_values[null_values['total_null'] > 0])
     return null_values[null_values['total_null'] > 0]
 
-def PCAPrep(df,x_columns,y_columns):
+def PCAPrep(df,x_columns,y_columns, n_components = 3):
     y_pca = df.iloc[:,y_columns].values
     x_pca = StandardScaler().fit_transform(df.iloc[:,x_columns])
-    pca = PCA(n_components=1)
-    # pc = pca.fit_transform(x_pca)
-
-    # print(pca.explained_variance_ratio_)
-    # print(pca.explained_variance_ratio_.sum())
-    return x_pca,y_pca
+    pca = PCA(n_components=n_components)
+    x_pca = pca.fit_transform(x_pca)
+    return x_pca,y_pca,n_components
 
 """
 Main
@@ -273,13 +270,13 @@ print("-------------------------------------")
 df_train,df_test = CreateDF_test_train_for_Neural_Network(df_bin)
 
 ### Create NP Array from the respective Scenario
-X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
-X_train2,Y_train2 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns2)
-X_train3,Y_train3 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns3)
-
-X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
-X_test2,Y_test2 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns2)
-X_test3,Y_test3 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns3)
+# X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
+# X_train2,Y_train2 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns2)
+# X_train3,Y_train3 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns3)
+#
+# X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
+# X_test2,Y_test2 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns2)
+# X_test3,Y_test3 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns3)
 
 
 
@@ -287,6 +284,7 @@ print("Based on All columns")
 # NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,1,500,2100,250)
 # NeuralNetworkModel2(X_train2,Y_train2,X_test2,Y_test2,x_columns,y_columns2,2,500,2100,250)
 # NeuralNetworkModel2(X_train3,Y_train3,X_test3,Y_test3,x_columns,y_columns3,3,500,2100,250)
+
 
 """
 EMPLOY PCA with LOGREG
@@ -296,14 +294,30 @@ print("-------------------------------------")
 print("PCA with NEURAL NETWORK")
 print("-------------------------------------")
 
-# x_pca,y_pca = PCAPrep(df_bin,x_columns,y_columns)
-# CustomizedLogRegWithPCA2(x_pca,y_pca,x_columns,y_columns,1)
-#
-# x_pca2,y_pca2 = PCAPrep(df_bin,x_columns,y_columns2)
-# CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns,2)
-#
-# x_pca3,y_pca3 = PCAPrep(df_bin,x_columns,y_columns3)
-# CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns,3)
+x_pca,y_pca,n_components = PCAPrep(df_bin,x_columns,y_columns,3)
+df_1 = pd.concat([pd.DataFrame(x_pca),pd.DataFrame(y_pca,columns = ["Y"])],axis = 1, sort = False)
+print(df_1.shape)
+
+X_train,Y_train = CreateNP_array_for_Neural_Network(df_1,x_pca.shape[1],y_pca.shape[1])
+X_test,Y_test = CreateNP_array_for_Neural_Network(df_1,x_pca.shape[1],y_pca.shape[1])
+NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_pca.shape[1],y_pca.shape[1],1,500,2100,250)
+
+
+
+
+
+print("-------------------------------------")
+print("PCA with LOG REG")
+print("-------------------------------------")
+
+x_pca,y_pca,n_components = PCAPrep(df_bin,x_columns,y_columns,3)
+CustomizedLogRegWithPCA2(x_pca,y_pca,x_columns,y_columns,1,n_components)
+
+x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,3)
+CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2,n_components)
+
+x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,3)
+CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3,n_components)
 
 """
 EMPLOY PEARSON CORR with LOGREG
