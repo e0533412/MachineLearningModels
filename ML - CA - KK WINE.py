@@ -103,7 +103,7 @@ def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,a,min_
             duration = (time.time() - start_time)
             counter += 1
         df.loc[j] = [j, accuracy_score, duration, x_columns, y_columns]
-    df.to_csv("NN - " + activation_mode + "-" + PCA + str(a) + ".csv")
+        df.to_csv("NN - " + activation_mode + "-" + PCA + str(a) + ".csv")
 
 def CustomizedLogRegWithPCA2(x,y,x_columns,y_columns,a,PCA=""):
     df = pd.DataFrame(columns=("Duration of Model", "Accuracy Score of Train Model", "Accuracy Score of Test  Model", "X_train columns", "Y_train columns","PCA"))
@@ -197,11 +197,13 @@ print("----------------------------------")
 
 print(df_wine.info())
 
-#drop data with NaN values
-df_wine.dropna(inplace = True)
+
+for col in fill_list:
+    df_wine.loc[:, col].fillna(df_wine.loc[:, col].mean(), inplace=True)
+
 
 print("----------------------------------")
-print("Dataframe Information after dropping NA")
+print("Dataframe Information after filling NA")
 print("----------------------------------")
 
 print(df_wine.info())
