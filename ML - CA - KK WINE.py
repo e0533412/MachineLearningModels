@@ -52,8 +52,8 @@ def CustomizedLogReg(df,x_columns,y_columns):
     train_accuracy = logReg.score(x_train, y_train)
     test_accuracy = logReg.score(x_test, y_test)
     print('One-vs-rest', '-' * 35,
-          'Accuracy Score of Train Model : {:.2f}'.format(train_accuracy),
-          'Accuracy Score of Test  Model : {:.2f}'.format(test_accuracy), sep='\n')
+          'Accuracy Score of Train Model : {:.3f}'.format(train_accuracy),
+          'Accuracy Score of Test  Model : {:.3f}'.format(test_accuracy), sep='\n')
 
     y_pred = logReg.predict(x_test)
     score = round(accuracy_score(y_test, y_pred), 3)
@@ -65,6 +65,36 @@ def CustomizedLogReg(df,x_columns,y_columns):
     # plt.show()
     print(cm)
 
+def CustomizedLogReg2(df,x_columns,y_columns,a,PCA=""):
+    x = df.iloc[:,x_columns]
+    y = df.iloc[:,y_columns]
+    # split data
+    df = pd.DataFrame(columns=("Duration of Model", "Accuracy Score of Train Model", "Accuracy Score of Test  Model", "X_train columns","Y_train columns", "PCA"))
+    # logReg = LogisticRegression(solver='lbfgs', multi_class='multinomial', random_state=42, max_iter=500)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=40)
+    ##Prepare Log Reg Model
+    logReg = LogisticRegression(random_state=40)
+    start_time = time.time()
+    logReg.fit(x_train, y_train)
+    duration = (time.time() - start_time)
+
+    train_accuracy = logReg.score(x_train, y_train)
+    test_accuracy = logReg.score(x_test, y_test)
+    print('One-vs-rest', '-' * 35,
+          'Duration of Model Fitting : {:.3f}s'.format(duration),
+          'Accuracy Score of Train Model : {:.3f}'.format(train_accuracy),
+          'Accuracy Score of Test  Model : {:.3f}'.format(test_accuracy), sep='\n')
+    y_pred = logReg.predict(x_test)
+    score = round(accuracy_score(y_test, y_pred), 3)
+    cm1 = cm(y_test, y_pred)
+    sns.heatmap(cm1, annot=True, fmt=".0f")
+    plt.xlabel('Predicted Values')
+    plt.ylabel('Actual Values')
+    plt.title('Accuracy Score: {0}'.format(score), size=15)
+    plt.show()
+    print(cm)
+    df.loc[0] = [duration, train_accuracy, test_accuracy, x_columns, y_columns, PCA]
+    df.to_csv(r"./LogReg" + "-" + str(a) + ".csv")
 
 def CreateNP_array_for_Neural_Network(df,x_columns,y_columns):
     X = df.iloc[:,x_columns].to_numpy()
@@ -103,7 +133,7 @@ def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,a,min_
 
 def CustomizedLogRegWithPCA2(x,y,x_columns,y_columns,a,PCA=""):
     df = pd.DataFrame(columns=("Duration of Model", "Accuracy Score of Train Model", "Accuracy Score of Test  Model", "X_train columns", "Y_train columns","PCA"))
-    logReg = LogisticRegression(solver='lbfgs', multi_class='multinomial', random_state=42, max_iter=500)
+    # logReg = LogisticRegression(solver='lbfgs', multi_class='multinomial', random_state=42, max_iter=500)
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=40)
     ##Prepare Log Reg Model
     logReg = LogisticRegression(random_state=40)
@@ -254,7 +284,19 @@ y_columns = [12]
 y_columns2 = [0]
 y_columns3 = [13]
 
-CustomizedLogReg(df_bin,x_columns,y_columns)
+
+"""
+Neural Network
+"""
+
+print("-------------------------------------")
+print("LogReg")
+print("-------------------------------------")
+
+CustomizedLogReg2(df_bin,x_columns,y_columns,1,"")
+CustomizedLogReg2(df_bin,x_columns,y_columns2,2,"")
+CustomizedLogReg2(df_bin,x_columns,y_columns3,3,"")
+
 
 """
 Neural Network
@@ -332,29 +374,29 @@ print("-------------------------------------")
 print("PCA with LOG REG")
 print("-------------------------------------")
 
-x_pca,y_pca,n_components = PCAPrep(df_bin,x_columns,y_columns,3)
-CustomizedLogRegWithPCA2(x_pca,y_pca,x_columns,y_columns,1,n_components)
-
-x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,3)
-CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2,n_components)
-
-x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,3)
-CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3,n_components)
-
-x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,1)
-CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2.1,n_components)
-
-x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,2)
-CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2.2,n_components)
-
-x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,3)
-CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3,n_components)
-
-x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,1)
-CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3.1,n_components)
-
-x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,2)
-CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3.2,n_components)
+# x_pca,y_pca,n_components = PCAPrep(df_bin,x_columns,y_columns,3)
+# CustomizedLogRegWithPCA2(x_pca,y_pca,x_columns,y_columns,1,n_components)
+#
+# x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,3)
+# CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2,n_components)
+#
+# x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,3)
+# CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3,n_components)
+#
+# x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,1)
+# CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2.1,n_components)
+#
+# x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,2)
+# CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2.2,n_components)
+#
+# x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,3)
+# CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3,n_components)
+#
+# x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,1)
+# CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3.1,n_components)
+#
+# x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,2)
+# CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3.2,n_components)
 
 """
 EMPLOY PEARSON CORR with LOGREG
@@ -363,31 +405,21 @@ EMPLOY PEARSON CORR with LOGREG
 print("-------------------------------------")
 print("PEARSON CORR with NEURAL NETWORK")
 print("-------------------------------------")
-print(df_bin)
-df_bin_ = df_bin.copy()
-df_bin_["quality_range"] = pd.to_numeric(df_bin_["quality_range"])
-corr_matrix = df_bin_.corr()
+# print(df_bin)
+# df_bin_ = df_bin.copy()
+# df_bin_["quality_range"] = pd.to_numeric(df_bin_["quality_range"])
+# corr_matrix = df_bin_.corr()
+#
+# plt.figure(figsize=(14, 5))
+# sns.heatmap(data=corr_matrix, annot=True, cmap='GnBu')
+# plt.show()
+# new_list = list(str(i) for i in corr_matrix.index)
+# print(new_list)
+# df = pd.DataFrame(columns=("Target Column", "correlation Value Threshold", "Correlated Columns", "Columns to Exclude"))
+#
+# for i in np.arange(0.1,1.0,0.1):
+#     GetCorrelationMatrixSummary(corr_matrix,i)
 
-plt.figure(figsize=(14, 5))
-sns.heatmap(data=corr_matrix, annot=True, cmap='GnBu')
-plt.show()
-new_list = list(str(i) for i in corr_matrix.index)
-print(new_list)
-df = pd.DataFrame(columns=("Target Column", "correlation Value Threshold", "Correlated Columns", "Columns to Exclude"))
-
-for i in np.arange(0.1,1.0,0.1):
-    GetCorrelationMatrixSummary(corr_matrix,i)
-# for i in corr_matrix.index:
-#     target = i
-#     corr_threshold = 0.3
-#     candidates = corr_matrix.index[(corr_matrix[target] > corr_threshold) | (corr_matrix[target] < -corr_threshold)].values
-#     candidates = candidates[candidates != target]
-#     print(i,'|Columns that are correlated to', target, ': ', candidates)
-#     removed_list = np.setdiff1d(new_list,candidates.tolist())
-#     removed_list = removed_list[removed_list != target]
-#     print(i,'|Removed: ', removed_list.tolist())
-#     df.loc[i] = [i, corr_threshold,candidates.tolist(), removed_list]
-#     df.to_csv("Correlation Matrix Threshold.csv")
 
 """
 EMPLOY DBSCAN
