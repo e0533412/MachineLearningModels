@@ -5,10 +5,10 @@ from sklearn.cluster import DBSCAN
 import datetime
 
 starttime=datetime.datetime.now()
-dataset = pd.read_csv('winequality-white.csv')
-x = dataset.iloc[0:2000, [5,6]].values
+dataset = pd.read_csv('winequalityN.csv')
+x = dataset.iloc[0:2000, [6,7]].values
 
-dbscan = DBSCAN(eps=4, min_samples = 5)
+dbscan = DBSCAN(eps=5, min_samples = 5)
 clusters = dbscan.fit_predict(x)
 
 colors = 'rgbkcmy'
@@ -22,11 +22,5 @@ plt.legend()
 endtime=datetime.datetime.now()
 plt.title('DBSCAN_WINE_RunTime: '+str(endtime-starttime))
 plt.show()
-
-
-
-
-
-
 
 
