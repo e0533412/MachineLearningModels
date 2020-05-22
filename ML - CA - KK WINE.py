@@ -92,7 +92,11 @@ def CreateNP_array_for_Neural_Network(df,x_columns,y_columns):
 # #     # print('Data: ', X_test[i], ', Actual: ', Y_test[i], ', Predicted: ', predictions[i])
 # #     print(',Actual: ', Y_test[i], ', Predicted: ', predictions[i])
 
+<<<<<<< HEAD
+def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,a,min_dense_value = 200, max_dense_value = 300,increment = 200):
+=======
 def NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,a,min_dense_value = 200, max_dense_value = 300,increment = 200,PCA = ""):
+>>>>>>> KK
     df = pd.DataFrame(columns=("dense value", "accuracy", "duration", "X_train columns", "Y_train columns"))
     counter = 0
     for j in range(min_dense_value,max_dense_value,increment):
@@ -271,13 +275,13 @@ print("-------------------------------------")
 df_train,df_test = CreateDF_test_train_for_Neural_Network(df_bin)
 
 ### Create NP Array from the respective Scenario
-X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
-X_train2,Y_train2 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns2)
-X_train3,Y_train3 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns3)
-
-X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
-X_test2,Y_test2 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns2)
-X_test3,Y_test3 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns3)
+# X_train,Y_train = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns)
+# X_train2,Y_train2 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns2)
+# X_train3,Y_train3 = CreateNP_array_for_Neural_Network(df_train,x_columns,y_columns3)
+#
+# X_test,Y_test = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns)
+# X_test2,Y_test2 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns2)
+# X_test3,Y_test3 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns3)
 
 
 
@@ -285,6 +289,7 @@ print("Based on All columns")
 NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,1,500,2100,250)
 NeuralNetworkModel2(X_train2,Y_train2,X_test2,Y_test2,x_columns,y_columns2,2,500,2100,250)
 NeuralNetworkModel2(X_train3,Y_train3,X_test3,Y_test3,x_columns,y_columns3,3,500,2100,250)
+
 
 
 """
@@ -323,6 +328,20 @@ X_train,Y_train = CreateNP_array_for_Neural_Network(df_1,x_columns_,y_columns_)
 X_test,Y_test = CreateNP_array_for_Neural_Network(df_1,x_columns_,y_columns_)
 NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns_,y_columns_,3,500,1100,500,"PCA")
 
+<<<<<<< HEAD
+x_pca,y_pca,n_components = PCAPrep(df_bin,x_columns,y_columns,3)
+df_1 = pd.concat([pd.DataFrame(x_pca),pd.DataFrame(y_pca,columns = ["Y"])],axis = 1, sort = False)
+print(df_1.shape)
+
+X_train,Y_train = CreateNP_array_for_Neural_Network(df_1,x_pca.shape[1],y_pca.shape[1])
+X_test,Y_test = CreateNP_array_for_Neural_Network(df_1,x_pca.shape[1],y_pca.shape[1])
+NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_pca.shape[1],y_pca.shape[1],1,500,2100,250)
+
+
+
+
+=======
+>>>>>>> KK
 
 print("-------------------------------------")
 print("PCA with LOG REG")
@@ -334,6 +353,10 @@ CustomizedLogRegWithPCA2(x_pca,y_pca,x_columns,y_columns,1,n_components)
 x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,3)
 CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2,n_components)
 
+<<<<<<< HEAD
+x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,3)
+CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3,n_components)
+=======
 x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,1)
 CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2.1,n_components)
 
@@ -348,6 +371,7 @@ CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3.1,n_components)
 
 x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,2)
 CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3.2,n_components)
+>>>>>>> KK
 
 """
 EMPLOY PEARSON CORR with LOGREG
