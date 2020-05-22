@@ -171,6 +171,21 @@ def PCAPrep(df,x_columns,y_columns, n_components = 3):
     x_pca = pca.fit_transform(x_pca)
     return x_pca,y_pca,n_components
 
+
+def GetCorrelationMatrixSummary(corr_matrix,corr_threshold = 0.3):
+    for i in range(len(corr_matrix.index)):
+        target = corr_matrix.index[i]
+        candidates = corr_matrix.index[(corr_matrix[target] > corr_threshold) | (corr_matrix[target] < -corr_threshold)].values
+        candidates = candidates[candidates != target]
+        print(i,'|Columns that are correlated to', target, ': ', candidates)
+        removed_list = np.setdiff1d(new_list,candidates.tolist())
+        removed_list = removed_list[removed_list != target]
+        print(i,'|Removed: ', removed_list.tolist())
+        df.loc[i] = [target, corr_threshold,candidates.tolist(), removed_list]
+    df.to_csv("Correlation Matrix Threshold - "+str(corr_threshold)+".csv")
+    return df
+
+
 """
 Main
 """
@@ -263,9 +278,9 @@ X_test3,Y_test3 = CreateNP_array_for_Neural_Network(df_test,x_columns,y_columns3
 
 
 print("Based on All columns")
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,1,100,2100,100)
-NeuralNetworkModel2(X_train2,Y_train2,X_test2,Y_test2,x_columns,y_columns2,2,100,2100,100)
-NeuralNetworkModel2(X_train3,Y_train3,X_test3,Y_test3,x_columns,y_columns3,3,100,2100,100)
+# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns,y_columns,1,100,2100,100)
+# NeuralNetworkModel2(X_train2,Y_train2,X_test2,Y_test2,x_columns,y_columns2,2,100,2100,100)
+# NeuralNetworkModel2(X_train3,Y_train3,X_test3,Y_test3,x_columns,y_columns3,3,100,2100,100)
 
 
 
@@ -283,7 +298,7 @@ x_columns_ = list(int(i) for i in range(0,n_components,1))
 y_columns_ = [n_components]
 X_train,Y_train = CreateNP_array_for_Neural_Network(df_1,x_columns_,y_columns_)
 X_test,Y_test = CreateNP_array_for_Neural_Network(df_1,x_columns_,y_columns_)
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns_,y_columns_,1,100,2100,100,"PCA")
+# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns_,y_columns_,1,100,2100,100,"PCA")
 
 ### Based on Y column = Type
 
@@ -293,7 +308,7 @@ x_columns_ = list(int(i) for i in range(0,n_components,1))
 y_columns_ = [n_components]
 X_train,Y_train = CreateNP_array_for_Neural_Network(df_1,x_columns_,y_columns_)
 X_test,Y_test = CreateNP_array_for_Neural_Network(df_1,x_columns_,y_columns_)
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns_,y_columns_,2,100,2100,100,"PCA")
+# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns_,y_columns_,2,100,2100,100,"PCA")
 
 ### Based on Y column = Quality Group
 
@@ -303,7 +318,7 @@ x_columns_ = list(int(i) for i in range(0,n_components,1))
 y_columns_ = [n_components]
 X_train,Y_train = CreateNP_array_for_Neural_Network(df_1,x_columns_,y_columns_)
 X_test,Y_test = CreateNP_array_for_Neural_Network(df_1,x_columns_,y_columns_)
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns_,y_columns_,3,100,2100,100,"PCA")
+# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_columns_,y_columns_,3,100,2100,100,"PCA")
 
 x_pca,y_pca,n_components = PCAPrep(df_bin,x_columns,y_columns,3)
 df_1 = pd.concat([pd.DataFrame(x_pca),pd.DataFrame(y_pca,columns = ["Y"])],axis = 1, sort = False)
@@ -311,7 +326,7 @@ print(df_1.shape)
 
 X_train,Y_train = CreateNP_array_for_Neural_Network(df_1,x_pca.shape[1],y_pca.shape[1])
 X_test,Y_test = CreateNP_array_for_Neural_Network(df_1,x_pca.shape[1],y_pca.shape[1])
-NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_pca.shape[1],y_pca.shape[1],100,2100,100)
+# NeuralNetworkModel2(X_train,Y_train,X_test,Y_test,x_pca.shape[1],y_pca.shape[1],100,2100,100)
 
 print("-------------------------------------")
 print("PCA with LOG REG")
@@ -325,6 +340,7 @@ CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2,n_components)
 
 x_pca3,y_pca3,n_components = PCAPrep(df_bin,x_columns,y_columns3,3)
 CustomizedLogRegWithPCA2(x_pca3,y_pca3,x_columns,y_columns3,3,n_components)
+
 x_pca2,y_pca2,n_components = PCAPrep(df_bin,x_columns,y_columns2,1)
 CustomizedLogRegWithPCA2(x_pca2,y_pca2,x_columns,y_columns2,2.1,n_components)
 
@@ -347,27 +363,31 @@ EMPLOY PEARSON CORR with LOGREG
 print("-------------------------------------")
 print("PEARSON CORR with NEURAL NETWORK")
 print("-------------------------------------")
+print(df_bin)
+df_bin_ = df_bin.copy()
+df_bin_["quality_range"] = pd.to_numeric(df_bin_["quality_range"])
+corr_matrix = df_bin_.corr()
 
-# target = 'Cultivar'
-# candidates = corr_mat.index[
-#     ((corr_mat[target] > 0.5) | (corr_mat[target] < -0.5))
-# ].values
-# candidates = candidates[candidates != target]
-# print('Correlated to', target, ': ', candidates)
-#
-# removed = []
-# for c1 in candidates:
-#     for c2 in candidates:
-#         if (c1 not in removed) and (c2 not in removed):
-#             if c1 != c2:
-#                 coef = corr_mat.loc[c1, c2]
-#                 if coef > 0.6 or coef < -0.6:
-#                     removed.append(c1)
-# print('Removed: ', removed)
-#
-# selected_features = [x for x in candidates if x not in removed]
-# print('Selected features: ', selected_features)
+plt.figure(figsize=(14, 5))
+sns.heatmap(data=corr_matrix, annot=True, cmap='GnBu')
+plt.show()
+new_list = list(str(i) for i in corr_matrix.index)
+print(new_list)
+df = pd.DataFrame(columns=("Target Column", "correlation Value Threshold", "Correlated Columns", "Columns to Exclude"))
 
+for i in np.arange(0.1,1.0,0.1):
+    GetCorrelationMatrixSummary(corr_matrix,i)
+# for i in corr_matrix.index:
+#     target = i
+#     corr_threshold = 0.3
+#     candidates = corr_matrix.index[(corr_matrix[target] > corr_threshold) | (corr_matrix[target] < -corr_threshold)].values
+#     candidates = candidates[candidates != target]
+#     print(i,'|Columns that are correlated to', target, ': ', candidates)
+#     removed_list = np.setdiff1d(new_list,candidates.tolist())
+#     removed_list = removed_list[removed_list != target]
+#     print(i,'|Removed: ', removed_list.tolist())
+#     df.loc[i] = [i, corr_threshold,candidates.tolist(), removed_list]
+#     df.to_csv("Correlation Matrix Threshold.csv")
 
 """
 EMPLOY DBSCAN
@@ -375,23 +395,23 @@ EMPLOY DBSCAN
 print("-------------------------------------")
 print("DBSCAN with NEURAL NETWORK")
 print("-------------------------------------")
-column_to_do_dbscan = [0,1,2,3,4,5,6,7,8,9,10,11,12,13]
-fig = plt.figure(figsize=(10, 10))
-x = df_bin.iloc[:,column_to_do_dbscan].values
-print(x)
-eps = 3
-min_samples = 25
-dbscan = DBSCAN(eps=eps, min_samples = min_samples)
-clusters = dbscan.fit_predict(x)
-colors = 'rgbkcmy'
-
-for i in np.unique(clusters):
-    label = 'Outlier' if i == -1 else 'Cluster ' + str(i + 1)
-    plt.scatter(x[clusters==i,11], x[clusters==i,12],
-                label=label)
-
-fig.suptitle(df_bin.columns[11] + " vs " + df_bin.columns[12] + ", eps = " + str(eps) + ",minsamples = " + str(min_samples) , fontsize=20)
-plt.xlabel(df_bin.columns[11], fontsize=18)
-plt.ylabel(df_bin.columns[12], fontsize=16)
-plt.legend()
-plt.show()
+# column_to_do_dbscan = [0,1,2,3,4,5,6,7,8,9,10,11,12,13]
+# fig = plt.figure(figsize=(10, 10))
+# x = df_bin.iloc[:,column_to_do_dbscan].values
+# print(x)
+# eps = 3
+# min_samples = 25
+# dbscan = DBSCAN(eps=eps, min_samples = min_samples)
+# clusters = dbscan.fit_predict(x)
+# colors = 'rgbkcmy'
+#
+# for i in np.unique(clusters):
+#     label = 'Outlier' if i == -1 else 'Cluster ' + str(i + 1)
+#     plt.scatter(x[clusters==i,11], x[clusters==i,12],
+#                 label=label)
+#
+# fig.suptitle(df_bin.columns[11] + " vs " + df_bin.columns[12] + ", eps = " + str(eps) + ",minsamples = " + str(min_samples) , fontsize=20)
+# plt.xlabel(df_bin.columns[11], fontsize=18)
+# plt.ylabel(df_bin.columns[12], fontsize=16)
+# plt.legend()
+# plt.show()

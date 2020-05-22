@@ -1,0 +1,43 @@
+,Target Column,correlation Value Threshold,Correlated Columns,Columns to Exclude
+0,type,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity'
+ 'free sulfur dioxide' 'pH' 'quality' 'quality_range' 'residual sugar'
+ 'sulphates' 'total sulfur dioxide' 'volatile acidity']"
+1,fixed acidity,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'free sulfur dioxide' 'pH'
+ 'quality' 'quality_range' 'residual sugar' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+2,volatile acidity,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity'
+ 'free sulfur dioxide' 'pH' 'quality' 'quality_range' 'residual sugar'
+ 'sulphates' 'total sulfur dioxide' 'type']"
+3,citric acid,0.8,[],"['alcohol' 'chlorides' 'density' 'fixed acidity' 'free sulfur dioxide'
+ 'pH' 'quality' 'quality_range' 'residual sugar' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+4,residual sugar,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity'
+ 'free sulfur dioxide' 'pH' 'quality' 'quality_range' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+5,chlorides,0.8,[],"['alcohol' 'citric acid' 'density' 'fixed acidity' 'free sulfur dioxide'
+ 'pH' 'quality' 'quality_range' 'residual sugar' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+6,free sulfur dioxide,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity' 'pH'
+ 'quality' 'quality_range' 'residual sugar' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+7,total sulfur dioxide,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity'
+ 'free sulfur dioxide' 'pH' 'quality' 'quality_range' 'residual sugar'
+ 'sulphates' 'type' 'volatile acidity']"
+8,density,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'fixed acidity' 'free sulfur dioxide'
+ 'pH' 'quality' 'quality_range' 'residual sugar' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+9,pH,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity'
+ 'free sulfur dioxide' 'quality' 'quality_range' 'residual sugar'
+ 'sulphates' 'total sulfur dioxide' 'type' 'volatile acidity']"
+10,sulphates,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity'
+ 'free sulfur dioxide' 'pH' 'quality' 'quality_range' 'residual sugar'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+11,alcohol,0.8,[],"['chlorides' 'citric acid' 'density' 'fixed acidity' 'free sulfur dioxide'
+ 'pH' 'quality' 'quality_range' 'residual sugar' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+12,quality,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity'
+ 'free sulfur dioxide' 'pH' 'quality_range' 'residual sugar' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
+13,quality_range,0.8,[],"['alcohol' 'chlorides' 'citric acid' 'density' 'fixed acidity'
+ 'free sulfur dioxide' 'pH' 'quality' 'residual sugar' 'sulphates'
+ 'total sulfur dioxide' 'type' 'volatile acidity']"
