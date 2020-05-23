@@ -89,12 +89,12 @@ feat = list(set(column)-set(["price"]))
 price = df["price"].values
 house = df[feat].values
 
-price = np.log(price) #run natural log for interpretation - change in natural log = percentage change
+# price = np.log(price) #run natural log for interpretation - change in natural log = percentage change
 
 #Pre-processing
 from sklearn.preprocessing import StandardScaler
 sn = StandardScaler();
-house=sn.fit_transform(house)
+# house=sn.fit_transform(house)
 
 #Split the data
 xtrain, xtest, ytrain, ytest = train_test_split(house, price, test_size=0.3, random_state=40)
@@ -120,3 +120,9 @@ print("Train Accuracy")
 print(lr.score(xtrain,ytrain))
 print("Test Accuracy")
 print(lr.score(xtest,ytest))
+
+#Model Validation
+mean_squared_error(Y_test, pred)
+r2_score(Y_test, pred)
+print("mean squared error = ", mean_squared_error(ytest, prediction, squared=False))
+print("r2 square = ", r2_score(ytest, prediction))

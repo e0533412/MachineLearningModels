@@ -10,6 +10,13 @@ from sklearn.metrics import mean_squared_error, r2_score
 df = pd.read_csv('kc_house_data.csv')
 df.head()
 
+###Check with Null values
+Sum = df.isnull().sum()
+Percentage = ( df.isnull().sum()/df.isnull().count())
+
+### found 2 missing value
+df.dropna(axis=0, inplace=True)
+
 pd.DataFrame(df.isna().sum()).T
 df.info()
 
@@ -33,6 +40,14 @@ X = df[['sqft_living']]
 #dependent variable
 Y = df['price']
 
+# Plot Graph
+plt.scatter(X,Y)
+plt.xlabel('sqft_living')
+plt.ylabel('price')
+plt.title('price vs sqft_living')
+plt.show()
+
+
 #Split the data
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=40)
 
@@ -48,8 +63,11 @@ simple_lr.fit(X_train,Y_train)
 end_time = time.time()
 print("-----%s seconds -----" % (end_time - start_time))
 
+
 #Predicting the data
 pred = simple_lr.predict(X_test)
+print(pred)
+print(Y_test)
 print("Train Accuracy")
 print(simple_lr.score(X_train,Y_train))
 print("Test Accuracy")
@@ -58,6 +76,9 @@ print(simple_lr.score(X_test,Y_test))
 #Model Validation
 mean_squared_error(Y_test, pred)
 r2_score(Y_test, pred)
+print("mean squared error = ", mean_squared_error(Y_test, pred))
+print("r2 square = ", r2_score(Y_test, pred))
+
 
 #Multivariate Linear Regression
 
