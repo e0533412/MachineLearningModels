@@ -248,7 +248,7 @@ print("Dataframe Information after filling NA")
 print("----------------------------------")
 
 print(df_wine.info())
-# sns.heatmap(df_wine.isnull(),yticklabels=False,cbar=False,cmap='viridis')
+sns.heatmap(df_wine.isnull(),yticklabels=False,cbar=False,cmap='viridis')
 
 ### Show the correlation matrix
 corr_matrix = df_wine.corr()
