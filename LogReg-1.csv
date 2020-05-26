@@ -1,0 +1,2 @@
+,Duration of Model,Accuracy Score of Train Model,Accuracy Score of Test  Model,X_train columns,Y_train columns,PCA
+0,0.23037505149841309,0.4699802067297119,0.45692307692307693,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]",[12],
